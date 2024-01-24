@@ -22,6 +22,7 @@ let SCOPES = 'https://www.googleapis.com/auth/drive';
 let signinButton = document.getElementsByClassName('signin')[0];
 let signoutButton = document.getElementsByClassName('signout')[0];
 let dragDiv = document.getElementById('drag-box');
+let textArea = document.getElementById('text-area');
 let tokenClient;
 let gapiInited = false;
 let gisInited = false;
@@ -196,7 +197,6 @@ function expand(v) {
         expandContainerUl.setAttribute('data-id', v.parentElement.getAttribute('data-id'));
         expandContainerUl.setAttribute('data-name', v.parentElement.getAttribute('data-name'));
     }
-    dragDiv.style.display = 'none';
 }
 
 // Función para mostrar la lista de archivos
@@ -236,12 +236,14 @@ function readEditDownload(v, condition) {
         expandContainerUl.setAttribute('data-id', '');
         expandContainerUl.setAttribute('data-name', '');
         if (condition == 'read') {
-            v.innerHTML = 'Read';
+            v.innerHTML = 'Leer';
             document.querySelector('textarea').value = res.body;
             document.documentElement.scrollTop = 0;
             console.log('Read Now')
+            dragDiv.style.display = 'none';
+            textArea.style.display = 'flex';
         } else if (condition == 'edit') {
-            v.innerHTML = 'Edit';
+            v.innerHTML = 'Editar';
             document.querySelector('textarea').value = res.body;
             document.documentElement.scrollTop = 0;
             let updateBtn = document.getElementsByClassName('upload')[0];
@@ -250,8 +252,10 @@ function readEditDownload(v, condition) {
             updateBtn.setAttribute('onClick', 'update()');
             document.querySelector('textarea').setAttribute('data-update-id', id);
             console.log('File ready for update');
+            dragDiv.style.display = 'none';
+            textArea.style.display = 'flex';
         } else {
-            v.innerHTML = 'Download';
+            v.innerHTML = 'Descargar';
             let blob = new Blob([res.body], { type: 'plain/text' });
             let a = document.createElement('a');
             a.href = window.URL.createObjectURL(blob);
@@ -319,4 +323,10 @@ function handleFileSelect(event) {
         audioPreview.src = '';
         audioContainer.style.display = 'none';
     }
+}
+
+// Mostrar "pantalla" de nueva transcripción
+function newTranscription() {
+    dragDiv.style.display = 'flex';
+    textArea.style.display = 'none';
 }

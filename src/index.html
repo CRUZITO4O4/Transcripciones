@@ -36,11 +36,7 @@
                     <input onchange="handleFileSelect(event)" id="audio" type="file" class="opacity-0" />
                 </label>
             </div>
-            <div class="flex flex-col w-5/6">
-                <button class="upload" onclick="upload()">Transcribir</button>
-            </div>
-
-            <section class="hidden">
+            <section id="text-area" class="hidden flex-col w-full h-full justify-center items-center">
                 <div class="flex justify-center w-full" id="audioContainer" style="display: none;">
                     <audio controls id="audioPreview" class=""></audio>
                 </div>
@@ -48,13 +44,16 @@
                 <textarea class="w-5/6 h-5/6 p-2 rounded-lg bg-transparent mt-10" style="resize: none;"
                     placeholder="La transcripción aparecerá aquí..."></textarea>
             </section>
+            <div class="flex flex-col w-5/6">
+                <button class="upload" onclick="upload()">Transcribir</button>
+            </div>
         </main>
 
         <!-- Historial de transcripciones -->
         <aside class="[grid-area:aside] rounded-l-lg bg-black">
             <div class="overflow-y-auto w-full p-4 flex h-full flex-col items-center justify-between overflow-hidden">
                 <section class="flex flex-col gap-4 items-center">
-                    <h2 class="text-lg">Transcripciones</h2>
+                    <span onclick="newTranscription()" class="text-lg cursor-pointer">Nueva transcripción</span>
                     <div class="list">
                         <ul role="list" class="flex flex-col gap-4">
                         </ul>
