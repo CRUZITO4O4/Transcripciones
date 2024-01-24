@@ -20,7 +20,7 @@
 
             <!-- Drag and drop para los audios -->
             <div id="drag-box" class="flex items-center justify-center w-5/6 h-full bg-transparent">
-                <label for="audio"
+                <label for="audio" id = "dragAndDrop"
                     class="flex flex-col items-center justify-center w-full h-80 border-2 p-2 rounded-lg cursor-pointer border-dashed dark:hover:bg-bray-800 dark:bg-transparent hover:bg-gray-100 dark:border-gray-400 dark:hover:border-white dark:hover:bg-zinc-600">
                     <div class="flex flex-col items-center justify-center p-12">
                         <svg class="w-10 h-10 mb-4 text-gray-500 dark:text-white" aria-hidden="true"
@@ -36,16 +36,18 @@
                     <input onchange="handleFileSelect(event)" id="audio" type="file" class="opacity-0" />
                 </label>
             </div>
+
+            <div class="flex justify-center w-full" id="audioContainer" style="display: none;">
+                <audio controls id="audioPreview" class=""></audio>
+            </div>
+
             <section id="text-area" class="hidden flex-col w-full h-full justify-center items-center">
-                <div class="flex justify-center w-full" id="audioContainer" style="display: none;">
-                    <audio controls id="audioPreview" class=""></audio>
-                </div>
 
                 <textarea class="w-5/6 h-5/6 p-2 rounded-lg bg-transparent mt-10" style="resize: none;"
                     placeholder="La transcripción aparecerá aquí..."></textarea>
             </section>
             <div class="flex flex-col w-5/6">
-                <button class="upload" onclick="upload()">Transcribir</button>
+                <button class="upload" onclick="uploadAudio()">Transcribir</button> <!-- Aquí antes en onClick era solo Uploud -->
             </div>
         </main>
 

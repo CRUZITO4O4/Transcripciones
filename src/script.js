@@ -1,5 +1,6 @@
 // Al cargar la ventana, se ejecutan las funciones gapiLoaded y gisLoaded, 
 // se verifica si hay un token de acceso almacenado y se restaura la sesión si es así.
+
 window.onload = () => {
     gapiLoaded();
     gisLoaded()
@@ -105,7 +106,7 @@ function checkFolder() {
         if (files && files.length > 0) {
             for (let i = 0; i < files.length; i++) {
                 let file = files[i];
-                localStorage.setItem('parent_folder', file.id);
+                localStorage.setItem('text_parent_folder', file.id);
                 console.log('Folder Available');
                 // Obtiene la lista de archivos si la carpeta está disponible
                 showList();
@@ -115,16 +116,34 @@ function checkFolder() {
             createFolder();
         }
     })
+
+    gapi.client.drive.files.list({
+        'q': 'name = "Transcripciones-Audios"',
+    }).then(function (response) {
+        let audioFiles = response.result.files;
+        if (audioFiles && audioFiles.length > 0) {
+            for (let i = 0; i < audioFiles.length; i++) {
+                let audioFile = audioFiles[i];
+                localStorage.setItem('audio_parent_folder', audioFile.id);
+                console.log('Audio Folder Available');
+            }
+        } else {
+            // Si la carpeta de audio no está disponible, la crea
+            createAudioFolder();
+        }
+    });
+
 }
 
 // Función para cargar un archivo de texto en Google Drive
 function upload() {
     // Obtiene el contenido del área de texto
     let text = document.querySelector('textarea');
+
     if (text.value != "") {
         const blob = new Blob([text.value], { type: 'plain/text' });
         // Obtiene el ID de la carpeta principal desde el almacenamiento local
-        const parentFolder = localStorage.getItem('parent_folder');
+        const parentFolder = localStorage.getItem('text_parent_folder');
         let twoWords = text.value.split(' ')[0] + '-' + text.value.split(' ')[1];
         // Configura los metadatos del archivo
         let metadata = {
@@ -152,6 +171,49 @@ function upload() {
     }
 }
 
+
+// Función para cargar un archivo de audio en Google Drive
+function uploadAudio() {
+    // Obtiene el elemento de entrada de tipo archivo (input type="file")
+    let audioInput = document.querySelector('input[type="file"]');
+
+    if (audioInput.files.length > 0) {
+        const audioFile = audioInput.files[0];
+        const blob = new Blob([audioFile], { type: 'audio/*' });
+
+        // Obtiene el ID de la carpeta principal desde el almacenamiento local
+        const parentFolder = localStorage.getItem('audio_parent_folder');
+
+        // Configura los metadatos del archivo
+        let metadata = {
+            // Establece el nombre de archivo utilizando el nombre original del archivo de audio
+            name: audioFile.name,
+            mimeType: 'audio/*',
+            parents: [parentFolder]
+        };
+
+        let formData = new FormData();
+        formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        formData.append("file", blob);
+
+        // Realiza la solicitud de carga del archivo a Google Drive
+        fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+            method: 'POST',
+            headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+            body: formData
+        }).then(function (response) {
+            return response.json();
+        }).then(function (value) {
+            console.log(value);
+            // Actualiza la lista al cargar el archivo
+            showAudioList();
+        });
+    }
+}
+
+
+
+
 // Función para crear la carpeta "Transcripciones-Textos" en Google Drive
 function createFolder() {
     let access_token = gapi.auth.getToken().access_token;
@@ -168,7 +230,7 @@ function createFolder() {
         }
     });
     request.execute(function (response) {
-        localStorage.setItem('parent_folder', response.id);
+        localStorage.setItem('text_parent_folder', response.id);
     })
 }
 
@@ -203,7 +265,7 @@ function expand(v) {
 function showList() {
     gapi.client.drive.files.list({
         // Obtener el ID de la carpeta principal desde el almacenamiento local
-        'q': `parents in "${localStorage.getItem('parent_folder')}"`
+        'q': `parents in "${localStorage.getItem('text_parent_folder')}"`
     }).then(function (response) {
         let files = response.result.files;
         if (files && files.length > 0) {
@@ -221,6 +283,29 @@ function showList() {
             listcontainer.innerHTML = '<div style="text-align: center;">No Files</div>'
         }
     })
+}
+
+function showAudioList() {
+    gapi.client.drive.files.list({
+        // Obtener el ID de la carpeta principal desde el almacenamiento local
+        'q': `parents in "${localStorage.getItem('audio_parent_folder')}"`
+    }).then(function (response) {
+        let files = response.result.files;
+        if (files && files.length > 0) {
+            listcontainer.innerHTML = '';
+            for (let i = 0; i < files.length; i++) {
+                listcontainer.innerHTML += `
+                
+                <li data-id="${files[i].id}" data-name="${files[i].name}">
+                    <p onclick="playAudio('${files[i].id}')">${files[i].name}</p>
+                </li>
+                
+                `;
+            }
+        } else {
+            listcontainer.innerHTML = '<div style="text-align: center;">No Audio Files</div>';
+        }
+    });
 }
 
 // Función para leer, editar o descargar un archivo
@@ -305,11 +390,14 @@ function deleteFile(v) {
 
 // Función para manejar la selección de archivos
 function handleFileSelect(event) {
+    console.log('handleFileSelect called');
     const fileInput = event.target;
     const audioPreview = document.getElementById('audioPreview');
     const audioContainer = document.getElementById('audioContainer');
+    const dragAndDrop = document.getElementById('dragAndDrop');
 
     if (fileInput.files.length > 0) {
+        //console.log('lengt > 0');
         const audioFile = fileInput.files[0];
         const objectURL = URL.createObjectURL(audioFile);
 
@@ -318,7 +406,10 @@ function handleFileSelect(event) {
 
         // Mostrar el contenedor de audio si hay un archivo seleccionado        
         audioContainer.style.display = 'flex'
+             
+        //dragAndDrop.style.display = 'none'
     } else {
+        //console.log('lengt empty');
         // Limpiar la fuente y ocultar el contenedor si no hay archivo seleccionado
         audioPreview.src = '';
         audioContainer.style.display = 'none';
