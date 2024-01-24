@@ -1,0 +1,76 @@
+html {
+    background-color: #3a3a41;
+    color: white;
+}
+
+#app {
+    display: grid;
+    grid-template-areas: "aside main main";
+    grid-template-columns: 260px 1fr;
+}
+
+.signin,
+.signout {
+    border-radius: 8px;
+    padding: 6px 25px;
+    background-color: #f1f1f1;
+    color: black;
+    outline: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    display: none;
+}
+
+.upload {
+    border-radius: 8px;
+    padding: 6px 30px;
+    background-color: #f1f1f1;
+    color: black;
+    outline: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+.list {
+    text-align: left;
+    max-width: 180px;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nombre-texto {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.expand-container {
+    background-color: #212324;
+    position: absolute;
+    display: none;
+    width: 140px;
+    height: auto;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media screen and (max-width: 700px) {
+    #app {
+        grid-template-areas: "main";
+        grid-template-columns: auto;
+    }
+
+    aside {
+        display: none;
+    }
+}

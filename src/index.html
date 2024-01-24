@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcripciones</title>
+    <link href="./output.css" rel="stylesheet">
+    <link href="./styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Contenedor principal -->
+    <div id="app" class="relative h-screen">
+
+        <!-- Audio y texto -->
+        <main class="[grid-area:main] overflow-y-auto w-full p-10 gap-10 flex flex-col items-center">
+
+            <!-- Drag and drop para los audios -->
+            <div id="drag-box" class="flex items-center justify-center w-5/6 h-full bg-transparent">
+                <label for="audio"
+                    class="flex flex-col items-center justify-center w-full h-80 border-2 p-2 rounded-lg cursor-pointer border-dashed dark:hover:bg-bray-800 dark:bg-transparent hover:bg-gray-100 dark:border-gray-400 dark:hover:border-white dark:hover:bg-zinc-600">
+                    <div class="flex flex-col items-center justify-center p-12">
+                        <svg class="w-10 h-10 mb-4 text-gray-500 dark:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                        </svg>
+                        <p class="mb-2 text-lg text-gray-500 dark:text-white"><span
+                                class="font-semibold">Presione</span> o
+                            arrastre y suelte audio</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">mp3, mp4, opus or awv </p>
+                    </div>
+                    <input onchange="handleFileSelect(event)" id="audio" type="file" class="opacity-0" />
+                </label>
+            </div>
+            <div class="flex flex-col w-5/6">
+                <button class="upload" onclick="upload()">Transcribir</button>
+            </div>
+
+            <section class="hidden">
+                <div class="flex justify-center w-full" id="audioContainer" style="display: none;">
+                    <audio controls id="audioPreview" class=""></audio>
+                </div>
+
+                <textarea class="w-5/6 h-5/6 p-2 rounded-lg bg-transparent mt-10" style="resize: none;"
+                    placeholder="La transcripción aparecerá aquí..."></textarea>
+            </section>
+        </main>
+
+        <!-- Historial de transcripciones -->
+        <aside class="[grid-area:aside] rounded-l-lg bg-black">
+            <div class="overflow-y-auto w-full p-4 flex h-full flex-col items-center justify-between overflow-hidden">
+                <section class="flex flex-col gap-4 items-center">
+                    <h2 class="text-lg">Transcripciones</h2>
+                    <div class="list">
+                        <ul role="list" class="flex flex-col gap-4">
+                        </ul>
+                    </div>
+                    <!-- Opciones para cada transcripción -->
+                    <div class="expand-container">
+                        <ul>
+                            <li class="py-2 cursor-pointer hover:text-white" onclick="readEditDownload(this, 'read')">
+                                Leer</li>
+                            <li class="py-2 cursor-pointer hover:text-white" onclick="readEditDownload(this, 'edit')">
+                                Editar</li>
+                            <li class="py-2 cursor-pointer hover:text-white"
+                                onclick="readEditDownload(this, 'download')">Descargar</li>
+                            <li class="py-2 cursor-pointer hover:text-white" onclick="deleteFile(this)">Eliminar</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Sesión -->
+                <section class="">
+                    <button class="signin">Iniciar sesión</button>
+                    <button class="signout">Cerrar sesión</button>
+                </section>
+            </div>
+        </aside>
+    </div>
+    <script src="script.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script async defer src="https://accounts.google.com/gsi/client"></script>
+</body>
+
+</html>
